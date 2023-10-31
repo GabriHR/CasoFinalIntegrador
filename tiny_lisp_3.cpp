@@ -146,7 +146,7 @@ int evaluate(Tokens tokens, std::unordered_map<std::string, int>& variables) {
 
 int main() {
     std::string input;
-    std::cout << "Enter an expression: ";
+    std::cout << " Escribe una expresion: ";
     std::getline(std::cin, input);
 
     Tokens rawTokens = tokenize(input);
