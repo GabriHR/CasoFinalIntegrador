@@ -1,15 +1,16 @@
 #include <iostream>
+#include <string>
+#include <vector>
 #include <sstream>
 #include <stack>
-#include <vector>
-#include <map>
-#include <functional>
 #include <stdexcept>
 
-typedef std::vector<std::string> Tokens;
+// Define un tipo para representar las expresiones
+typedef std::vector<std::string> Expression;
 
-Tokens tokenize(const std::string& input) {
-    Tokens tokens;
+// Función para dividir una expresión en tokens
+Expression tokenize(const std::string& input) {
+    Expression tokens;
     std::string token;
     std::istringstream stream(input);
 
@@ -19,91 +20,63 @@ Tokens tokenize(const std::string& input) {
 
     return tokens;
 }
-
-// Definición de un entorno para almacenar funciones y variables globales
-struct Environment {
+// Función para evaluar una expresión
+int evaluate(Expression& tokens) {
     std::stack<int> stack;
-    std::map<std::string, std::function<void(Environment&)>> functions;
-};
 
-void define_function(Environment& env, const std::string& name, std::function<void(Environment&)> func) {
-    env.functions[name] = func;
-}
-
-void call_function(Environment& env, const std::string& name) {
-    if (env.functions.find(name) != env.functions.end()) {
-        env.functions[name](env);
-    } else {
-        throw std::runtime_error("Función no definida: " + name);
-    }
-}
-
-int evaluate(Environment& env, Tokens& tokens) {
-    while (!tokens.empty()) {
-        std::string token = tokens.back();
-        tokens.pop_back();
-
+    for (const std::string &token: tokens)
         if (token == "+") {
-            int a = env.stack.top();
-            env.stack.pop();
-            int b = env.stack.top();
-            env.stack.pop();
-            env.stack.push(a + b);
-        } else if (token == "*") {
-            int a = env.stack.top();
-            env.stack.pop();
-            int b = env.stack.top();
-            env.stack.pop();
-            env.stack.push(a * b);
-        } else if (token == "define") {
-            if (tokens.empty()) {
-                throw std::runtime_error("Falta el nombre de la variable en la definición.");
+            if (stack.size() < 2) {
+                throw std::runtime_error("Faltan operandos para +");
             }
-            std::string var_name = tokens.back();
-            tokens.pop_back();
-            if (tokens.empty()) {
-                throw std::runtime_error("Falta el valor de la variable en la definición.");
+            int a = stack.top();
+            stack.pop();
+            int b = stack.top();
+            stack.pop();
+            stack.push(a + b);
+        } else if (token == "") {
+            if (stack.size() < 2) {
+                throw std::runtime_error("Faltan operandos para");
             }
-            int var_value = std::stoi(tokens.back());
-            tokens.pop_back();
-            env.functions[var_name] = [var_value, &env](Environment& local_env) {
-                local_env.stack.push(var_value);
-            };
-        } else if (token == "call") {
-            if (tokens.empty()) {
-                throw std::runtime_error("Falta el nombre de la función en la llamada.");
-            }
-            std::string func_name = tokens.back();
-            tokens.pop_back();
-            call_function(env, func_name);
+            int a = stack.top();
+            stack.pop();
+            int b = stack.top();
+            stack.pop();
+            stack.push(a * b);
         } else {
-            env.stack.push(std::stoi(token));
+            stack.push(std::stoi(token));
         }
+
+
+    if (stack.size() != 1) {
+        throw std::runtime_error("La expresión no está bien formada");
     }
 
-    if (env.stack.size() != 1) {
-        throw std::runtime_error("Expresión mal formada.");
-    }
-
-    return env.stack.top();
+    return stack.top();
 }
-
 int main() {
-    Environment env;
-
-    define_function(env, "dup", [](Environment& env) {
-        int value = env.stack.top();
-        env.stack.push(value);
-    });
-
     try {
         std::string input;
+        std::cout << "Ingrese una expresión (por ejemplo, 3 4 + 5 ): ";
         std::getline(std::cin, input);
-        Tokens tokens = tokenize(input);
-        std::cout << evaluate(env, tokens) << std::endl;
+        Expression tokens = tokenize(input);
+        int result = evaluate(tokens);
+        std::cout << "Resultado: " << result << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
-
+    return 0;
+}
+int main() {
+    try {
+        std::string input;
+        std::cout << "Ingrese una expresión (por ejemplo, 3 4 + 5): ";
+        std::getline(std::cin, input);
+        Expression tokens = tokenize(input);
+        int result = evaluate(tokens);
+        std::cout << "Resultado: " << result << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
     return 0;
 }
