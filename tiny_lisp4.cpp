@@ -1,5 +1,3 @@
-// Description: Pequeño intérprete de Lisp. Implementa las funciones + y * y permite definir y llamar funciones.
-// Version: 0.1
 #include <iostream>
 #include <sstream>
 #include <stack>
