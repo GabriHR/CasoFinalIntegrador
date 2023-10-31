@@ -32,6 +32,7 @@ int main() {
         return 1; // Salir del programa con un código de error
     }
 
-    std::cout << "El resultado de la operación es: " << resultado << std::endl;
+    std::cout << "El resultado de la operacion es: " << resultado << std::endl;
 
-    
+    return 0;
+}
