@@ -63,7 +63,6 @@ int evaluate(Tokens& tokens) {
 
     return stack.top();
 }
-
 int main() {
     while (true) {
         std::string input;
