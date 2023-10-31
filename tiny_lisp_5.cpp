@@ -32,13 +32,30 @@ int evaluate(Tokens& tokens) {
             stack.pop();
             int b = stack.top();
             stack.pop();
-            stack.push(a + b);
+            stack.push(b + a);
+        } else if (token == "-") {
+            int a = stack.top();
+            stack.pop();
+            int b = stack.top();
+            stack.pop();
+            stack.push(b - a);
         } else if (token == "*") {
             int a = stack.top();
             stack.pop();
             int b = stack.top();
             stack.pop();
-            stack.push(a * b);
+            stack.push(b * a);
+        } else if (token == "/") {
+            int a = stack.top();
+            stack.pop();
+            int b = stack.top();
+            stack.pop();
+            if (a != 0) {
+                stack.push(b / a);
+            } else {
+                std::cout << "Error: División por cero." << std::endl;
+                return 0;
+            }
         } else {
             stack.push(std::stoi(token));
         }
